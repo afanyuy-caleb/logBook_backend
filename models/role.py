@@ -1,8 +1,10 @@
 import sqlite3 as sq
+from shared_model import Shared_Model
+from constants import PATH_TO_DB
 
-class Role:
+class Role(Shared_Model):
   
-  dbfile = 'logBook.db'
+  dbfile = PATH_TO_DB
   table = 'role'
 
   def create(self):
@@ -39,52 +41,3 @@ class Role:
 
     except sq.Error as err:
       return False, err
-  
-  def update(self, updateData, condition):
-    try:
-      with sq.connect(Role.dbfile) as conn:
-        cur = conn.cursor()
-
-        query = f"UPDATE {Role.table} set {updateData} WHERE {condition}"
-
-        cur.execute(query)
-        conn.commit()
-
-        conn.close()
-
-        return True, ''
-    
-    except sq.Error as err:
-      return False, err
-  
-  def read(self, condition=None):
-    try:
-       with sq.connect(Role.dbfile) as conn:
-        cur = conn.cursor()
-
-        if condition is None:
-          query = f"SELECT * FROM {Role.table}"
-        else:
-          query = f"SELECT * FROM {Role.table} WHERE {condition}"
-
-        cur.execute(query)
-        result =  cur.fetchall()
-
-        return True, result
-    
-    except sq.Error as e:
-      return False, e
-  
-  def delete(self, condition):
-    try:
-       with sq.connect(Role.dbfile) as conn:
-        cur = conn.cursor()
-     
-        query = f"DELETE FROM {Role.table} WHERE {condition}"
-        cur.execute(query)
-        conn.commit()
-
-        return True, ''
-
-    except sq.Error as e:
-      return False, e

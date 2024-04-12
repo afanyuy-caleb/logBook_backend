@@ -1,8 +1,10 @@
 import sqlite3 as sq
+from constants import PATH_TO_DB
+from shared_model import Shared_Model
 
-class classTab:
+class classTab (Shared_Model):
   
-  dbfile = 'logBook.db'
+  dbfile = PATH_TO_DB
   table = 'class'
 
   def table_create(self):
@@ -38,58 +40,7 @@ class classTab:
 
     except sq.Error as err:
       return False, err
-  
-  def update(self, updateData, condition):
-    try:
-      with sq.connect(classTab.dbfile) as conn:
-        cur = conn.cursor()
 
-        update_query = f"UPDATE {classTab.table} set {updateData} WHERE {condition}"
+# obj.read()
 
-        cur.execute(update_query)
-        conn.commit()
 
-        conn.close()
-
-        return True, ''
-    
-    except sq.Error as err:
-      return False, err
-  
-  def read(self, condition=None):
-    try:
-      with sq.connect(classTab.dbfile) as conn:
-        cur = conn.cursor()
-
-        if condition is None:
-          query = f"SELECT * FROM {classTab.table}"
-        else:
-          query = f"SELECT * FROM {classTab.table} WHERE {condition}"
-
-        cur.execute(query)
-        result =  cur.fetchall()
-        
-        return True, result
-    
-    except sq.Error as e:
-      return False, e
-    
-    finally:
-      conn.close()
-  
-  def delete(self, condition):
-    try:
-       with sq.connect(classTab.dbfile) as conn:
-        cur = conn.cursor()
-     
-        query = f"DELETE FROM {classTab.table} WHERE {condition}"
-        cur.execute(query)
-        conn.commit()
-
-        return True, ''
-
-    except sq.Error as e:
-      return False, e
-    
-    finally:
-      conn.close()

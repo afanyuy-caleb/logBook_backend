@@ -1,8 +1,10 @@
 import sqlite3 as sq
+from constants import PATH_TO_DB
+from shared_model import Shared_Model
 
-class classCourse:
+class classCourse(Shared_Model):
   
-  dbfile = 'logBook.db'
+  dbfile = PATH_TO_DB
   table = 'class_courses'
 
   def create(self):
@@ -42,58 +44,6 @@ class classCourse:
 
         conn.close()
       return True, ''
-
-    except sq.Error as err:
-      return False, err
-  
-  def update(self, updateData, condition):
-    try:
-      
-      with sq.connect(classCourse.dbfile) as conn:
-        cur = conn.cursor()
-
-        update_query = f"UPDATE {classCourse.table} set {updateData} WHERE {condition}"
-        
-        cur.execute(update_query)
-        conn.commit()
-        
-        return True, ''
-    
-    except sq.Error as err:
-      return False, err
-    
-    finally:
-      conn.close()
-      
-  
-  def read(self, condition=None):
-    try:
-       with sq.connect(classCourse.dbfile) as conn:
-        cur = conn.cursor()
-
-        if condition is None:
-          sel = f"SELECT * FROM {classCourse.table}"
-        else:
-          sel = f"SELECT * FROM {classCourse.table} WHERE {condition}"
-
-        cur.execute(sel)
-        result =  cur.fetchone()
-
-        return True, result
-    
-    except sq.Error as err:
-      return False, err
-  
-  def delete(self, condition):
-    try:
-       with sq.connect(classCourse.dbfile) as conn:
-        cur = conn.cursor()
-     
-        query = f"DELETE FROM {classCourse.table} WHERE {condition}"
-        cur.execute(query)
-        conn.commit()
-
-        return True, ''
 
     except sq.Error as err:
       return False, err
