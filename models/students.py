@@ -7,6 +7,9 @@ class Students(Shared_Model):
   dbfile = PATH_TO_DB
   table = 'students'
 
+  def __init__(self):
+    pass
+
   def table_create(self):
     try:
 
@@ -55,4 +58,30 @@ class Students(Shared_Model):
     except sq.Error as err:
       return False, err
   
- 
+  def read(self, tableName, condition=None ):
+    try:
+      with sq.connect(PATH_TO_DB) as conn:
+        cur = conn.cursor()
+
+        if condition:
+          query = f"SELECT * FROM {tableName}"
+          result = cur.execute(query).fetchone()
+
+          for row in result:
+            file = __class__(id=result[0],)
+
+            
+          
+          return True, result
+        
+        else:
+          query = f"SELECT * FROM {tableName} WHERE {condition}"
+          result = cur.execute(query).fetchall()
+          
+          return True, result
+    
+    except sq.Error as e:
+      return False, e
+    
+    finally:
+      conn.close()

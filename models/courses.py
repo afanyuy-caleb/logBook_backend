@@ -1,11 +1,21 @@
 import sqlite3 as sq
-from shared_model import Shared_Model
-from constants import PATH_TO_DB
+import os, sys
 
-class Courses(Shared_Model):
+current_dir = os.getcwd()
+sys.path.append(current_dir)
+
+from .base_model import *
+from .constants import PATH_TO_DB
+
+class Courses(Shared_Model, AbstractBaseModel):
   
   dbfile = PATH_TO_DB
   table = 'courses'
+
+  def __init__(self, id, cname, teacher):
+    self.id = id
+    self.name = cname
+    self.teacher = teacher
 
   def create(self):
     try:
@@ -42,4 +52,43 @@ class Courses(Shared_Model):
     except sq.Error as err:
       return False, err
   
+
+  def read(condition=None):
+    try:
+      with sq.connect(PATH_TO_DB) as conn:
+        cur = conn.cursor()
+
+        if condition:
+          query = f"SELECT * FROM {Courses.table} WHERE {condition}"
+          result = cur.execute(query).fetchone()
+
+          file = __class__(id=result[0], cname=result[1], teacher=result[2])
+
+          return True, file
+        
+        else:
+
+          files = []
+          query = f"SELECT * FROM {Courses.table}"
+          result = cur.execute(query).fetchall()
+          
+          for row in result:
+
+            file = __class__(id=row[0], cname=row[1], teacher=row[2])
+            files.append(file)
+
+          return True, files
+    
+    except sq.Error as e:
+      return False, e
+    
+    finally:
+      conn.close()
   
+  
+  def toJSON(self):
+    return {
+      "id": self.id,
+      "name": self.name,
+      "teacher": self.teacher
+    }
