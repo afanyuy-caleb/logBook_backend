@@ -14,11 +14,12 @@ def parse_response_data(data):
     dictionary = None
 
     if isinstance(data, AbstractBaseModel):
-        print("The data is a model")
+        
         try:
             dictionary = data.toJSON()
         except AttributeError:
             dictionary = data
+            
     elif isinstance(data, dict):
         dictionary = data
     else:

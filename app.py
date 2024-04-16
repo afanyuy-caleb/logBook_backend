@@ -1,5 +1,4 @@
 import os
-
 from flask import Flask, send_from_directory
 
 from views.courses import courses_view
@@ -13,7 +12,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.register_blueprint(courses_view)
 
-#to download images from the server
+# to download images from the server
 @app.route('/uploads/<name>')
 def download_file(name):
     return send_from_directory(app.config['UPLOAD_FOLDER'], name)

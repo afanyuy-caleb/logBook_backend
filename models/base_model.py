@@ -24,43 +24,55 @@ class AbstractBaseModel(ABC, dict):
     
 
 class Shared_Model:
-  
-  def update(self, updateData, condition, tableName):
+  table = None
+  def __init__(self, table=None ) -> None:
+    self.table == table  
+
+  def update(self, column, setInfo, value):
+
     try:
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
 
-        update_query = f"UPDATE {tableName} set {updateData} WHERE {condition}"
+        if column == 'id':
+          update = f"UPDATE {self.table} set {setInfo} WHERE course_id = {value}"
 
-        cur.execute(update_query)
+        else:
+          update = f"UPDATE {self.table} set {setInfo} WHERE course_name = '{value}'"
+
+        cur.execute(update)
         conn.commit()
+        
+        return True, 'Update successful'
 
-        conn.close()
-
-        return True, ''
-    
     except sq.Error as err:
       return False, err
     
+    finally:
+      conn.close()
+    
 
-  def delete(self, tableName, condition=None):
+  def delete(self, condition=None):
     try:
        with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
 
         if condition:
-          query = f"DELETE FROM {tableName} WHERE {condition}"
+          query = f"DELETE FROM {self.table} WHERE {condition}"
 
         else:
-          query = f"DELETE FROM {tableName}"
+          query = f"DELETE FROM {self.table}"
 
-        cur.execute(query)
-        conn.commit()
-
-        return True, ''
+        if cur.execute(query):
+          conn.commit()
+          return True, 'Deleted successfully'
+        
+        return False, "Delete Failed"
 
     except sq.Error as e:
       return False, e
     
     finally:
       conn.close()
+
+      

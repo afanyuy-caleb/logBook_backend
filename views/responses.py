@@ -1,6 +1,6 @@
 from flask import Response
 
-from utils import parse_response_data
+from .utils import parse_response_data
 
 class JSONResponse(Response):
     def __init__(self, response=None, status = None, headers = None, mimetype = None, content_type = "application/json", direct_passthrough = False, data=None) -> None:

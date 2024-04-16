@@ -1,19 +1,33 @@
 import sqlite3 as sq
-from shared_model import Shared_Model
-from constants import PATH_TO_DB
+from .base_model import *
+from .constants import PATH_TO_DB
+from .classes import Class
+from .role import Role
 
-class Students(Shared_Model):
+class Students(Shared_Model, AbstractBaseModel):
   
-  dbfile = PATH_TO_DB
   table = 'students'
 
-  def __init__(self):
-    pass
+  def __init__(self, id=None, name=None, Dob=None, gender=None, Tel=None, role=None, class_id=None):
+
+    super().__init__(self.table)
+    role_obj = Role()
+    cls_obj = Class()
+    self.id = id
+    self.name = name
+    self.Dob = Dob,
+    self.gender = gender
+    self.Tel = Tel
+
+    if role:
+      state, self.role = role_obj.read_unique(role)
+    if class_id:
+      state, self.class_name = cls_obj.read_unique(class_id)
 
   def table_create(self):
     try:
 
-      with sq.connect(Students.dbfile) as conn:
+      with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
       
         # Enable foreign key support 
@@ -41,47 +55,92 @@ class Students(Shared_Model):
     except sq.Error as err:
       return False, err
 
+  def write(self, data_list, set_type = False):
 
-  def write(self, list):
-    try:
-      with sq.connect(Students.dbfile) as conn:
-        cur = conn.cursor()
-
-        for row in list:
-            query = f"INSERT INTO {Students.table} VALUES(?, ?, ?, ?, ?, ?, ?)"
-            cur.execute(query, row)
-            conn.commit()
-
-        conn.close()
-      return True, ''
-
-    except sq.Error as err:
-      return False, err
-  
-  def read(self, tableName, condition=None ):
     try:
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
 
+        if set_type:
+          query = f"INSERT INTO {Students.table} VALUES(?, ?, ?, ?, ?, ?, ?)"
+          cur.execute(query, data_list)
+
+        else:
+
+          for row in data_list:
+            query = f"INSERT INTO {Students.table} VALUES(?, ?, ?, ?, ?, ?, ?)"
+            cur.execute(query, row)
+
+        conn.commit()
+
+        return True, 'Insert Successful'
+
+    except sq.Error as err:
+      return False, err
+    
+    finally:
+      conn.close()
+  
+  def read(self, condition=None):
+
+    try:
+      with sq.connect(PATH_TO_DB) as conn:
+        cur = conn.cursor()
+
+        files = []
         if condition:
-          query = f"SELECT * FROM {tableName}"
-          result = cur.execute(query).fetchone()
-
-          for row in result:
-            file = __class__(id=result[0],)
-
-            
-          
-          return True, result
+          query = f"SELECT * FROM {self.table} WHERE {condition}"
         
         else:
-          query = f"SELECT * FROM {tableName} WHERE {condition}"
-          result = cur.execute(query).fetchall()
-          
-          return True, result
+          query = f"SELECT * FROM {self.table}"
+
+        result = cur.execute(query).fetchall()
+        
+        if not result:
+          return False, "No Result found"
+
+        for row in result:
+
+          file = __class__(id=row[0], name=row[1], Dob=row[2], gender=row[3], Tel=row[4], role=row[5], class_id=row[6])
+          files.append(file)
+
+        return True, files
+
+    except sq.Error as e:
+      return False, e
+    
+    finally:
+      conn.close()
+
+  def read_unique(self, column, data):
+
+    try:
+      with sq.connect(PATH_TO_DB) as conn:
+        cur = conn.cursor()
+
+        query = f"SELECT * FROM {self.table} WHERE {column} = '{data}'"
+        result = cur.execute(query).fetchone()
+
+        if not result:
+          return False, "No Result found"
+
+        file = __class__(id=result[0], name=result[1], Dob=result[2], gender=result[3], Tel=result[4], role=result[5], class_id=result[6])
+
+        return True, file
     
     except sq.Error as e:
       return False, e
     
     finally:
       conn.close()
+  
+  def toJSON(self):
+    return {
+      "id": self.id,
+      "name": self.name,
+      "Dob": self.Dob,
+      "gender": self.gender,
+      "Tel": self.Tel,
+      "role": self.role,
+      "class": self.class_name
+    }

@@ -3,11 +3,11 @@ import sys
 current_dir = os.getcwd()
 sys.path.append(current_dir)
 
-from models.students import Students
+from models.classes import classTab
 
-obj = Students()
+obj = classTab()
 
-def load(cond = None):
+def get_items(cond = None):
   if cond is None:
     return obj.read()
   else:

@@ -2,7 +2,7 @@ import sqlite3 as sq
 from constants import PATH_TO_DB
 from .base_model import *
 
-class classTab (Shared_Model):
+class Class (Shared_Model):
   
   dbfile = PATH_TO_DB
   table = 'class'
@@ -10,7 +10,7 @@ class classTab (Shared_Model):
   def table_create(self):
     try:
 
-      with sq.connect(classTab.dbfile) as conn:
+      with sq.connect(Class.dbfile) as conn:
         cur = conn.cursor()
       
         # Create the class table
@@ -27,11 +27,11 @@ class classTab (Shared_Model):
 
   def write(self, list):
     try:
-      with sq.connect(classTab.dbfile) as conn:
+      with sq.connect(Class.dbfile) as conn:
         cur = conn.cursor()
 
         for row in list:
-            query = f"INSERT INTO {classTab.table} VALUES(?, ?)"
+            query = f"INSERT INTO {Class.table} VALUES(?, ?)"
             cur.execute(query, row)
             conn.commit()
 
