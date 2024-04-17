@@ -1,5 +1,4 @@
-import os
-import sys
+import os, sys
 current_dir = os.getcwd()
 sys.path.append(current_dir)
 

@@ -1,4 +1,8 @@
 import sqlite3 as sq
+import os, sys
+current_dir = os.getcwd()
+sys.path.append(current_dir)
+
 from .base_model import *
 from .constants import PATH_TO_DB
 from .classes import Class
@@ -20,9 +24,13 @@ class Students(Shared_Model, AbstractBaseModel):
     self.Tel = Tel
 
     if role:
-      state, self.role = role_obj.read_unique(role)
+      state, item = role_obj.read_unique(column="role_id", data=role)
+      self.role = (item.toJSON())['role_name'] if state else None
+
     if class_id:
-      state, self.class_name = cls_obj.read_unique(class_id)
+      state, item = cls_obj.read_unique(column="class_id", data=class_id)
+      self.class_name = (item.toJSON())['class_name'] if state else None
+
 
   def table_create(self):
     try:
@@ -50,7 +58,7 @@ class Students(Shared_Model, AbstractBaseModel):
         conn.commit()
 
         conn.close()
-        return True, ''
+        return True, 'Table created successfully'
       
     except sq.Error as err:
       return False, err
@@ -138,7 +146,7 @@ class Students(Shared_Model, AbstractBaseModel):
     return {
       "id": self.id,
       "name": self.name,
-      "Dob": self.Dob,
+      "Dob": (self.Dob)[0],
       "gender": self.gender,
       "Tel": self.Tel,
       "role": self.role,

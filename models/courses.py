@@ -1,6 +1,4 @@
 import sqlite3 as sq
-import os, sys
-import json
 
 from .base_model import *
 from .constants import PATH_TO_DB
@@ -13,6 +11,7 @@ class Courses(Shared_Model, AbstractBaseModel):
     self.id = id
     self.name = cname
     self.teacher = teacher
+
 
   def create(self):
     try:
@@ -27,7 +26,7 @@ class Courses(Shared_Model, AbstractBaseModel):
         conn.commit()
 
         conn.close()
-        return True, ''
+        return True, 'Table created successfully'
       
     except sq.Error as err:
       return False, err
@@ -59,6 +58,7 @@ class Courses(Shared_Model, AbstractBaseModel):
     finally:
       conn.close()
   
+
   def read(self, condition=None):
 
     try:
@@ -78,7 +78,7 @@ class Courses(Shared_Model, AbstractBaseModel):
           return False, "No Result found"
 
         for row in result:
-          
+
           file = __class__(id=row[0], cname=row[1], teacher=row[2])
           files.append(file)
 
@@ -90,6 +90,7 @@ class Courses(Shared_Model, AbstractBaseModel):
     finally:
       conn.close()
   
+
   def read_unique(self, column, data):
 
     try:
@@ -112,6 +113,7 @@ class Courses(Shared_Model, AbstractBaseModel):
     finally:
       conn.close()
   
+
   def toJSON(self):
     return {
       "course_id": self.id,

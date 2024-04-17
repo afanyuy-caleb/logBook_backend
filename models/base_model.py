@@ -26,7 +26,7 @@ class AbstractBaseModel(ABC, dict):
 class Shared_Model:
   table = None
   def __init__(self, table=None ) -> None:
-    self.table == table  
+    self.table = table  
 
   def update(self, column, setInfo, value):
 
@@ -74,5 +74,3 @@ class Shared_Model:
     
     finally:
       conn.close()
-
-      
