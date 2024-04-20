@@ -9,7 +9,7 @@ from models.classes import Class
 
 obj = classCourse()
 
-column_list = ['class_name', 'course_name', 'course_info']
+column_list = ['class_id', 'course_id', 'course_info']
 def get_items(cond = None, return_obj=False):
 
   if cond is None:
@@ -50,7 +50,7 @@ def save_courseInfo(item_dict):
       
   # Update the db
 
-  return obj.update(set_data=item_dict['course_info'], class_id=info_class_id, course_id=info_course_id)
+  return obj.update(set_data=item_dict['course_info'], class_id=item_dict['class_id'], course_id=item_dict['course_id'])
 
 
 def data_verify(item_dict):
@@ -58,62 +58,50 @@ def data_verify(item_dict):
 
   if len(item_dict) > 3 or len(item_dict) < 3:
     return False, "column count doesn't match"
-  
+
   # Ensure there are no unknown columns
+  print(column_list)
+  print(item_dict.keys())
+
   for key in item_dict.keys():
     if key not in column_list:
       return False, f"Invalid key, {key}"
   
   # Ensure that a unique columns are present
-  if 'course_name' not in item_dict: 
+  if 'course_id' not in item_dict: 
     return False, "You must give a course to be updated"
 
-  if 'class_name' not in item_dict: 
+  if 'class_id' not in item_dict: 
     return False, "A class must be given"
   
   if 'course_info' not in item_dict: 
     return False, "There is no information to update"
   
   # Verify that the given class and course exists
-  if not isExist(value=item_dict['class_name'], table="class"):
+  if not isExist(value=item_dict['class_id'], table="class"):
     return False, "Invalid Class"
   
-  if not isExist(value=item_dict['course_name'], table="courses"):
+  if not isExist(value=item_dict['course_id'], table="courses"):
     return False, "Invalid Course"
   
   return True, ''
   
 
 def isExist(value, table):
-  global info_class_id, info_course_id
 
   if table == "class":
       new_obj = Class()
+      column = "class_id"
 
   else:
     new_obj = Courses()
+    column = "course_id"
 
-  stats, items = new_obj.read()
+  stats = new_obj.read_unique(column, data=value)
 
-  if stats:
-    list_of_items = [
-        item.toJSON() for item in items
-      ]
-    
-    for data in list_of_items:
-      new_item = list(data.values())
+  if stats[0]:
+    return True
 
-      if new_item[1] == value:
-        if table == "class":
-          info_class_id = new_item[0]
-
-        else:
-          info_course_id = new_item[0]
-
-        return True
-
-      return False
-    
   else:
     return False
 
@@ -124,6 +112,6 @@ def delete_courseinfo(item_dict):
   if not state:
     return state, msg
     
-  condition = f"class_id = {info_class_id} AND course_id = {info_course_id}"
+  condition = f"class_id = {item_dict['class_id']} AND course_id = {item_dict['course_id']}"
 
   return obj.delete(condition)

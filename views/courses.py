@@ -10,6 +10,10 @@ courses_view = Blueprint('courses', __name__, url_prefix='/courses')
 @courses_view.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def list_or_create():
   if request.method == 'GET':
+    if request.args.get('condition'):
+      
+      return get_items(cond=request.args.get('condition'))
+
     return get_items()
   
   elif request.method in ['POST', 'PUT']:

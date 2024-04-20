@@ -10,11 +10,15 @@ class_course_view = Blueprint('class_course', __name__, url_prefix='/class_cours
 @class_course_view.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def list_or_create():
   if request.method == 'GET':
+    if request.args.get('condition'):
+      
+      return get_items(cond=request.args.get('condition'))
+    
     return get_items()
-  
   elif request.method in ['POST', 'PUT']:
     
-    submitted_data = parse_request_data(request=request)
+    submitted_data = request.json
+
     state, msg = save_courseInfo(submitted_data)
 
   else:

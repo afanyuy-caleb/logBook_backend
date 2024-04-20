@@ -23,6 +23,7 @@ def get_items(cond = None, return_obj=False):
       list_of_students = [
         stud.toJSON() for stud in students
       ]
+      
       return list_of_students
     
     return students
