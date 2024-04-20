@@ -1,13 +1,13 @@
 from flask import Blueprint, request
 import os, sys
 
-from controllers.students import *
+from controllers.role import *
 from .utils import parse_request_data
 from .responses import JSONResponse
 
-students_view = Blueprint('students', __name__, url_prefix='/students')
+roles_view = Blueprint('roles', __name__, url_prefix='/roles')
 
-@students_view.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@roles_view.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def list_or_create():
   if request.method == 'GET':
     return get_items()
@@ -15,11 +15,11 @@ def list_or_create():
   elif request.method in ['POST', 'PUT']:
     
     submitted_data = parse_request_data(request=request)
-    state, msg = save_student(submitted_data)
+    state, msg = save_role(submitted_data)
 
   else:
     submitted_data = parse_request_data(request=request)
-    state, msg = delete_student(submitted_data)
+    state, msg = delete_role(submitted_data)
 
   if state:
     return msg

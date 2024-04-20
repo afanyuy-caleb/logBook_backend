@@ -24,11 +24,13 @@ class Role(Shared_Model, AbstractBaseModel):
         cur.execute(query)
         conn.commit()
 
-        conn.close()
         return True, 'Table Created successfully'
       
     except sq.Error as err:
       return False, err
+    
+    finally:
+      conn.close()
     
 
   def write(self, data_list, set_type = False):

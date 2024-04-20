@@ -1,13 +1,13 @@
 from flask import Blueprint, request
 import os, sys
 
-from controllers.students import *
+from controllers.class_courses import *
 from .utils import parse_request_data
 from .responses import JSONResponse
 
-students_view = Blueprint('students', __name__, url_prefix='/students')
+class_course_view = Blueprint('class_course', __name__, url_prefix='/class_courses')
 
-@students_view.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@class_course_view.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def list_or_create():
   if request.method == 'GET':
     return get_items()
@@ -15,11 +15,11 @@ def list_or_create():
   elif request.method in ['POST', 'PUT']:
     
     submitted_data = parse_request_data(request=request)
-    state, msg = save_student(submitted_data)
+    state, msg = save_courseInfo(submitted_data)
 
   else:
     submitted_data = parse_request_data(request=request)
-    state, msg = delete_student(submitted_data)
+    state, msg = delete_courseinfo(submitted_data)
 
   if state:
     return msg

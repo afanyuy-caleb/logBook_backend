@@ -32,7 +32,7 @@ class Students(Shared_Model, AbstractBaseModel):
       self.class_name = (item.toJSON())['class_name'] if state else None
 
 
-  def table_create(self):
+  def create(self):
     try:
 
       with sq.connect(PATH_TO_DB) as conn:
@@ -57,26 +57,27 @@ class Students(Shared_Model, AbstractBaseModel):
         cur.execute(query)
         conn.commit()
 
-        conn.close()
         return True, 'Table created successfully'
       
     except sq.Error as err:
       return False, err
+    
+    finally:
+        conn.close()
+
 
   def write(self, data_list, set_type = False):
-
     try:
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
 
         if set_type:
-          query = f"INSERT INTO {Students.table} VALUES(?, ?, ?, ?, ?, ?, ?)"
+          query = f"INSERT INTO {self.table} VALUES(?, ?, ?, ?, ?, ?, ?)"
           cur.execute(query, data_list)
 
         else:
-
           for row in data_list:
-            query = f"INSERT INTO {Students.table} VALUES(?, ?, ?, ?, ?, ?, ?)"
+            query = f"INSERT INTO {self.table} VALUES(?, ?, ?, ?, ?, ?, ?)"
             cur.execute(query, row)
 
         conn.commit()
@@ -90,7 +91,6 @@ class Students(Shared_Model, AbstractBaseModel):
       conn.close()
   
   def read(self, condition=None):
-
     try:
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
@@ -121,7 +121,6 @@ class Students(Shared_Model, AbstractBaseModel):
       conn.close()
 
   def read_unique(self, column, data):
-
     try:
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()

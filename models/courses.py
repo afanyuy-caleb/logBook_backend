@@ -15,7 +15,6 @@ class Courses(Shared_Model, AbstractBaseModel):
 
   def create(self):
     try:
-
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
       
@@ -25,15 +24,17 @@ class Courses(Shared_Model, AbstractBaseModel):
         cur.execute(query)
         conn.commit()
 
-        conn.close()
         return True, 'Table created successfully'
       
     except sq.Error as err:
       return False, err
+    
+    finally:
+      conn.close()
+
 
 
   def write(self, data_list, set_type = False):
-
     try:
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
@@ -60,7 +61,6 @@ class Courses(Shared_Model, AbstractBaseModel):
   
 
   def read(self, condition=None):
-
     try:
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
@@ -92,7 +92,6 @@ class Courses(Shared_Model, AbstractBaseModel):
   
 
   def read_unique(self, column, data):
-
     try:
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()

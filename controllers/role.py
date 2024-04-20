@@ -3,11 +3,11 @@ import sys
 current_dir = os.getcwd()
 sys.path.append(current_dir)
 
-from models.classes import Class
+from models.role import Role
 
-obj = Class()
+obj = Role()
 
-column_list = ['class_id', "class_name"]
+column_list = ['role_id', "role_name"]
 
 def get_items(cond = None, return_obj=False):
   if cond is None:
@@ -37,22 +37,22 @@ def get_unique_item(col, data, return_obj = False):
   return status, item
 
 
-def save_class(item_dict):
+def save_role(item_dict):
   state, msg = data_verify(item_dict)
 
   if not state:
     return state, msg
   
-  if isExist(item_dict['class_id']):
-    if class_name == item_dict['class_name']:
+  if isExist(item_dict['role_id']):
+    if class_name == item_dict['role_name']:
       return False, "There is nothing to update"
     
     else:
       # update the db
-      return update_class(item_dict, column="class_id", unq_value=item_dict['class_id'])
+      return update_role(item_dict, column="role_id", unq_value=item_dict['role_id'])
   
-  elif get_unique_item(col="class_name", data=item_dict['class_name'])[0]:
-    return False, "Class already exists"
+  elif get_unique_item(col="role_name", data=item_dict['role_name'])[0]:
+    return False, "Role already exists"
   
   else:
     # Insert into the db
@@ -71,11 +71,12 @@ def data_verify(item_dict):
       return False, f"Invalid key, {key}"
   
   # Ensure that a unique column is present
-  if 'class_id' not in item_dict:
+  if 'role_id' not in item_dict:
     return False, "A Unique column must be present"
-    
-  if 'class_name' not in item_dict:
-    return False, "A class must be given"
+
+  if 'role_name' not in item_dict:
+    return False, "A role column must be included"
+  
   return True, ''
 
 
@@ -92,9 +93,8 @@ def isExist(value):
     return False
   
   
-def update_class(item_dict, column, unq_value):
+def update_role(item_dict, column, unq_value):
   setInfo = f"class_name = {item_dict['class_name']}"
-
   return obj.update(column, setInfo, unq_value)
     
 
@@ -114,12 +114,13 @@ def insert(dict):
   return obj.write(value_tuple, set_type=True) 
 
 
-def delete_class(item_dict):
+def delete_role(item_dict):
   state, msg = data_verify(item_dict)
 
   if not state:
     return state, msg
   
-  condition = f"class_id = {item_dict['class_id']}"
+  id = item_dict['role_id']
+  condition = f"role_id = {id}"
 
   return obj.delete(condition)

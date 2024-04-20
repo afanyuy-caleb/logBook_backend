@@ -25,6 +25,7 @@ class AbstractBaseModel(ABC, dict):
 
 class Shared_Model:
   table = None
+  
   def __init__(self, table=None ) -> None:
     self.table = table  
 
@@ -34,11 +35,11 @@ class Shared_Model:
       with sq.connect(PATH_TO_DB) as conn:
         cur = conn.cursor()
 
-        if column == 'id':
-          update = f"UPDATE {self.table} set {setInfo} WHERE course_id = {value}"
+        if column in ['id', 'course_id', 'class_id']:
+          update = f"UPDATE {self.table} set {setInfo} WHERE {column} = {value}"
 
         else:
-          update = f"UPDATE {self.table} set {setInfo} WHERE course_name = '{value}'"
+          update = f"UPDATE {self.table} set {setInfo} WHERE {column} = '{value}'"
 
         cur.execute(update)
         conn.commit()
@@ -65,7 +66,7 @@ class Shared_Model:
 
         if cur.execute(query):
           conn.commit()
-          return True, 'Deleted successfully'
+          return True, 'Delete successful'
         
         return False, "Delete Failed"
 
